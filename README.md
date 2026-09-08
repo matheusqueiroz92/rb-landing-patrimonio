@@ -41,6 +41,17 @@ Valores padrão estão em `src/config/site.ts`. No Docker, as mesmas chaves entr
 | `VITE_GTM_ID` | Google Tag Manager (opcional) |
 | `VITE_META_PIXEL_ID` | Meta Pixel (opcional) |
 
+## Docker (local)
+
+Na primeira vez, crie a rede que o Traefik usa na VPS:
+
+```bash
+docker network create traefik-public
+docker compose up --build
+```
+
+No PC o Compose usa a pasta atual (`BUILD_CONTEXT=.`). Sem mapear porta no host: para ver a página, use `npm run dev`.
+
 ## Produção (VPS)
 
 O modelo é o mesmo da landing [rb-palestra-holding](https://github.com/matheusqueiroz92/rb-palestra-holding): o repositório no GitHub pode ter o prefixo `rb-`; na VPS as pastas são `/var/www/...` e `/opt/apps/...`.
@@ -50,23 +61,25 @@ O modelo é o mesmo da landing [rb-palestra-holding](https://github.com/matheusq
 | Código (clone git) | `/var/www/rb-landing-patrimonio` |
 | Compose + `.env` | `/opt/apps/rb-landing-patrimonio` |
 
+Um único `docker-compose.yml`: no PC o context é `.`; na VPS o `.env` define `BUILD_CONTEXT=/var/www/rb-landing-patrimonio`.
+
 O Nginx da imagem escuta na porta 80. O Traefik termina o HTTPS na rede `traefik-public`.
 
 ### Primeiro deploy
 
-1. Crie o repositório no GitHub e faça push da branch `main`.
-2. Na VPS, clone o código e copie o Compose:
+1. Publique a branch `main` no GitHub.
+2. Na VPS:
 
 ```bash
 git clone git@github.com:matheusqueiroz92/rb-landing-patrimonio.git /var/www/rb-landing-patrimonio
 mkdir -p /opt/apps/rb-landing-patrimonio
-cp /var/www/rb-landing-patrimonio/deploy/docker-compose.vps.yml /opt/apps/rb-landing-patrimonio/docker-compose.yml
+cp /var/www/rb-landing-patrimonio/docker-compose.yml /opt/apps/rb-landing-patrimonio/docker-compose.yml
 cp /var/www/rb-landing-patrimonio/.env.example /opt/apps/rb-landing-patrimonio/.env
 cd /opt/apps/rb-landing-patrimonio
 docker compose up -d --build
 ```
 
-O `.env` precisa de `APP_DOMAIN=sucessoes.reboucasbulhoes.com`.
+O `.env` da VPS precisa de `APP_DOMAIN` e `BUILD_CONTEXT` (já vêm no `.env.example`).
 
 ### CI/CD (push em `main`)
 
@@ -86,6 +99,5 @@ Na VPS o deploy não usa `git pull` solto: faz `git fetch` + `git reset --hard o
 
 ```
 src/                 páginas, seções, ilustrações e conteúdo
-deploy/              Compose usado só na VPS
 .github/workflows/   CI/CD (build + SSH)
 ```

@@ -60,6 +60,7 @@ jobs:
             cd /var/www/rb-landing-patrimonio
             git fetch origin main
             git reset --hard origin/main
+            cp /var/www/rb-landing-patrimonio/docker-compose.yml /opt/apps/rb-landing-patrimonio/docker-compose.yml
             cd /opt/apps/rb-landing-patrimonio
             docker compose build --no-cache web
             docker compose up -d --force-recreate web

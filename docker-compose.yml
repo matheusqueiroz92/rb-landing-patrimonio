@@ -1,7 +1,7 @@
 services:
   web:
     build:
-      context: .
+      context: ${BUILD_CONTEXT:-.}
       dockerfile: Dockerfile
       args:
         VITE_SITE_URL: ${VITE_SITE_URL:-https://sucessoes.reboucasbulhoes.com}
@@ -13,17 +13,20 @@ services:
     image: sucessoes-web:latest
     container_name: sucessoes-web
     restart: unless-stopped
+    expose:
+      - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.sucessoes.rule=Host(`${APP_DOMAIN:-sucessoes.reboucasbulhoes.com}`) || Host(`www.${APP_DOMAIN:-sucessoes.reboucasbulhoes.com}`)"
+      - "traefik.http.routers.sucessoes.entrypoints=websecure"
+      - "traefik.http.routers.sucessoes.tls=true"
+      - "traefik.http.routers.sucessoes.tls.certresolver=letsencrypt"
+      - "traefik.http.services.sucessoes.loadbalancer.server.port=80"
     networks:
       - traefik-public
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.http.routers.sucessoes.entrypoints=websecure
-      - traefik.http.routers.sucessoes.rule=Host(`sucessoes.reboucasbulhoes.com`) || Host(`www.sucessoes.reboucasbulhoes.com`)
-      - traefik.http.routers.sucessoes.tls=true
-      - traefik.http.routers.sucessoes.tls.certresolver=letsencrypt
-      - traefik.http.services.sucessoes.loadbalancer.server.port=80
 
 networks:
   traefik-public:
+    name: traefik-public
     external: true
