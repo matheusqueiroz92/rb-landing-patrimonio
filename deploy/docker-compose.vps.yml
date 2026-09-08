@@ -1,0 +1,30 @@
+services:
+  web:
+    build:
+      context: /var/www/rb-landing-patrimonio
+      dockerfile: Dockerfile
+      args:
+        VITE_SITE_URL: ${VITE_SITE_URL:-https://sucessoes.reboucasbulhoes.com}
+        VITE_WHATSAPP_NUMERO: ${VITE_WHATSAPP_NUMERO:-5577998654477}
+        VITE_WHATSAPP_MENSAGEM: "${VITE_WHATSAPP_MENSAGEM:-Olá. Vim pela página sobre holding familiar e empresarial e gostaria de agendar uma conversa de diagnóstico.}"
+        VITE_AGENDAMENTO_URL: ${VITE_AGENDAMENTO_URL:-}
+        VITE_GTM_ID: ${VITE_GTM_ID:-}
+        VITE_META_PIXEL_ID: ${VITE_META_PIXEL_ID:-}
+    image: sucessoes-web:latest
+    container_name: sucessoes-web
+    restart: unless-stopped
+    expose:
+      - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.sucessoes.rule=Host(`${APP_DOMAIN}`) || Host(`www.${APP_DOMAIN}`)"
+      - "traefik.http.routers.sucessoes.entrypoints=websecure"
+      - "traefik.http.routers.sucessoes.tls.certresolver=letsencrypt"
+      - "traefik.http.services.sucessoes.loadbalancer.server.port=80"
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true
