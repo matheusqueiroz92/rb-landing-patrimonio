@@ -58,6 +58,7 @@ jobs:
           script: |
             set -euo pipefail
             cd /var/www/rb-landing-patrimonio
+            git remote set-url origin https://github.com/matheusqueiroz92/rb-landing-patrimonio.git
             git fetch origin main
             git reset --hard origin/main
             cp /var/www/rb-landing-patrimonio/docker-compose.yml /opt/apps/rb-landing-patrimonio/docker-compose.yml

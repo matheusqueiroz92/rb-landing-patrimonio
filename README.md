@@ -71,7 +71,7 @@ O Nginx da imagem escuta na porta 80. O Traefik termina o HTTPS na rede `traefik
 2. Na VPS:
 
 ```bash
-git clone git@github.com:matheusqueiroz92/rb-landing-patrimonio.git /var/www/rb-landing-patrimonio
+git clone https://github.com/matheusqueiroz92/rb-landing-patrimonio.git /var/www/rb-landing-patrimonio
 mkdir -p /opt/apps/rb-landing-patrimonio
 cp /var/www/rb-landing-patrimonio/docker-compose.yml /opt/apps/rb-landing-patrimonio/docker-compose.yml
 cp /var/www/rb-landing-patrimonio/.env.example /opt/apps/rb-landing-patrimonio/.env
@@ -90,8 +90,8 @@ Secrets do repositório (Settings → Secrets and variables → Actions), iguais
 | Secret | Valor |
 | --- | --- |
 | `VPS_HOST` | `147.79.107.246` |
-| `VPS_USER` | `root` |
-| `VPS_SSH_KEY` | chave **privada** cujo par público está em `/root/.ssh/authorized_keys` na VPS |
+| `VPS_USER` | `deploy` |
+| `VPS_SSH_KEY` | chave **privada** (`gha_sucessoes`) cujo par público está em `/home/deploy/.ssh/authorized_keys` na VPS |
 
 Na VPS o deploy não usa `git pull` solto: faz `git fetch` + `git reset --hard origin/main`, para a pasta ficar idêntica ao GitHub.
 
